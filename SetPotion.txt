@@ -1,0 +1,139 @@
+#include <iostream>
+using namespace std;
+
+// 포션 세팅 함수 (Call by Pointer)
+void setPotion(int count, int* p_HPPotion, int* p_MPPotion) 
+{
+    *p_HPPotion = count;
+    *p_MPPotion = count;
+}
+
+int main() 
+{
+    int status[4] = { 0 };   // status[0]: HP, status[1]: MP, status[2]: 공격력, status[3]: 방어력 , 기본 스탯 배열 선언 및 초기화 진행
+    int hpPotion, mpPotion;
+
+    // HP, MP 입력 (50 이하일 경우 재입력)
+    do 
+    {
+        cout << "HP와 MP를 입력해주세요: ";
+        cin >> status[0] >> status[1];
+        if (status[0] < 50 && status[1] < 50) 
+        {
+            cout << "HP나 MP의 값이 너무 작습니다. 다시 입력해주세요." << endl;
+        }
+    } while (status[0] > 50 && status[1] > 50);
+
+    // 공격력, 방어력 입력 (0 이하일 경우 재입력)
+    do 
+    {
+        cout << "공격력과 방어력을 입력해주세요: ";
+        cin >> status[2] >> status[3];
+        if (status[2] < 0 && status[3] < 0) 
+        {
+            cout << "공격력이나 방어력 값이 잘못되었습니다. 다시 입력해주세요." << endl;
+        }
+    } while (status[2] > 0 && status[3] > 0);
+
+    // 포션 세팅
+    setPotion(5, &hpPotion, &mpPotion);
+    cout << "* 포션이 지급되었습니다. (HP, MP 포션 각 5개)" << endl;
+
+    int choice;
+    while (true) 
+    {
+        cout << "=============================================" << endl;
+        cout << "<스탯 관리 시스템>" << endl;
+        cout << "1. HP 회복" << endl;
+        cout << "2. MP 회복" << endl;
+        cout << "3. HP 강화" << endl;
+        cout << "4. MP 강화" << endl;
+        cout << "5. 공격 스킬 사용" << endl;
+        cout << "6. 필살기 사용" << endl;
+        cout << "7. 나가기" << endl;
+        cout << "번호를 선택해주세요: ";
+        cin >> choice;
+
+        if (choice == 7) 
+        {
+            cout << "시스템을 종료합니다." << endl;
+            break;
+        }
+
+        switch (choice) 
+        {
+        case 1: // HP 회복
+            if (hpPotion > 0)
+            {
+                status[0] += 20;
+                hpPotion--;
+                cout << "* HP가 20 회복되었습니다. 포션이 1개 차감됩니다." << endl;
+                cout << "현재 HP: " << status[0] << endl;
+                cout << "남은 포션 수: " << hpPotion << endl;
+            }
+            else 
+            {
+                cout << "포션이 부족합니다." << endl;
+            }
+            break;
+
+        case 2: // MP 회복
+            if (mpPotion > 0) 
+            {
+                status[1] += 20;
+                mpPotion--;
+                cout << "* MP가 20 회복되었습니다. 포션이 1개 차감됩니다." << endl;
+                cout << "현재 MP: " << status[1] << endl;
+                cout << "남은 포션 수: " << mpPotion << endl;
+            }
+            else 
+            {
+                cout << "포션이 부족합니다." << endl;
+            }
+            break;
+
+        case 3: // HP 강화
+            status[0] *= 2;
+            cout << "* HP가 2배로 증가되었습니다." << endl;
+            cout << "현재 HP: " << status[0] << endl;
+            break;
+
+        case 4: // MP 강화
+            status[1] *= 2;
+            cout << "* MP가 2배로 증가되었습니다." << endl;
+            cout << "현재 MP: " << status[1] << endl;
+            break;
+
+        case 5: // 공격 스킬 사용
+            if (status[1] >= 50) 
+            {
+                status[1] -= 50;
+                cout << "* 스킬을 사용하여 MP가 50 소모되었습니다." << endl;
+                cout << "현재 MP: " << status[1] << endl;
+            }
+            else 
+            {
+                cout << "스킬 사용이 불가합니다." << endl;
+            }
+            break;
+
+        case 6: // 필살기 사용 (임의로 MP 100 차감)
+            if (status[1] >= 100) 
+            {
+                status[1] -= 100;
+                cout << "* 필살기를 사용하여 MP가 100 소모되었습니다!" << endl;
+                cout << "현재 MP: " << status[1] << endl;
+            }
+            else 
+            {
+                cout << "필살기 사용이 불가합니다." << endl;
+            }
+            break;
+
+        default:
+            cout << "잘못된 번호입니다." << endl;
+        }
+    }
+
+    return 0;
+}
