@@ -96,14 +96,16 @@ public:
         cout << nickname << " (" << job_name << ") : 파이어볼을 발사한다!" << endl;
     }
 
-    void attack(Monster* monster) override {
+    void attack(Monster* monster) override 
+    {
         cout << nickname << "이(가) 파이어볼을 시전했다!" << endl;
         monster->damaged(25);
     }
 };
 
 // Thief 
-class Thief : public Player {
+class Thief : public Player 
+{
 public:
     Thief(string nickname) : Player(nickname) 
     {
@@ -112,7 +114,8 @@ public:
         cout << "* 도적으로 전직하였습니다." << endl;
     }
 
-    void attack() override {
+    void attack() override 
+    {
         cout << nickname << " (" << job_name << ") : 단검으로 빠르게 찌른다!" << endl;
     }
 
@@ -138,7 +141,8 @@ public:
         cout << nickname << " (" << job_name << ") : 화살을 날린다!" << endl;
     }
 
-    void attack(Monster* monster) override {
+    void attack(Monster* monster) override 
+    {
         cout << nickname << "이(가) 정확하게 화살을 쐈다!" << endl;
         monster->damaged(18);
     }
