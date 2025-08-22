@@ -1,0 +1,187 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Player 추상 클래스
+class Monster; // 전방 선언
+
+class Player 
+{
+protected:
+    string nickname;
+    string job_name;
+    int HP = 50;
+    int MP = 50;
+    int Speed = 50;
+    int Accuracy = 50;
+
+public:
+    Player(string nickname) : nickname(nickname) {}
+    virtual ~Player() {}
+
+    virtual void attack() = 0; // 순수 가상 함수
+    virtual void attack(Monster* monster) = 0; // 오버로딩된 공격
+
+    string getJobName() { return job_name; }
+    string getNickname() { return nickname; }
+    int getHP() { return HP; }
+
+    void showStatus() 
+    {
+        cout << "=== 상태창 ===" << endl;
+        cout << "닉네임: " << nickname << endl;
+        cout << "직업: " << job_name << endl;
+        cout << "HP: " << HP << " / MP: " << MP
+            << " / Speed: " << Speed << " / Accuracy: " << Accuracy << endl;
+    }
+};
+
+// Monster 클래스
+class Monster 
+{
+private:
+    string name;
+    int HP;
+
+public:
+    Monster(string name, int hp) : name(name), HP(hp) {}
+
+    void damaged(int dmg) 
+    {
+        HP -= dmg;
+        if (HP < 0) HP = 0;
+        cout << name << "이(가) " << dmg << " 데미지를 입었다! (남은 HP: " << HP << ")" << endl;
+    }
+
+    bool isDead() { return HP <= 0; }
+    string getName() { return name; }
+};
+
+// Warrior
+class Warrior : public Player
+{
+public:
+    Warrior(string nickname) : Player(nickname)
+    {
+        job_name = "전사";
+        HP = 80;
+        cout << "* 전사로 전직하였습니다." << endl;
+    }
+
+    void attack() override
+    {
+        cout << nickname << " (" << job_name << ") : 장검을 휘두른다!" << endl;
+    }
+
+    void attack(Monster* monster) override
+    {
+        cout << nickname << "이(가) 검으로 " << monster->getName() << "을(를) 벤다!" << endl;
+        monster->damaged(20);
+    }
+};
+
+// Magician
+class Magician : public Player 
+{
+public:
+    Magician(string nickname) : Player(nickname) 
+    {
+        job_name = "마법사";
+        MP = 80;
+        cout << "* 마법사로 전직하였습니다." << endl;
+    }
+
+    void attack() override 
+    {
+        cout << nickname << " (" << job_name << ") : 파이어볼을 발사한다!" << endl;
+    }
+
+    void attack(Monster* monster) override {
+        cout << nickname << "이(가) 파이어볼을 시전했다!" << endl;
+        monster->damaged(25);
+    }
+};
+
+// Thief 
+class Thief : public Player {
+public:
+    Thief(string nickname) : Player(nickname) 
+    {
+        job_name = "도적";
+        Speed = 80;
+        cout << "* 도적으로 전직하였습니다." << endl;
+    }
+
+    void attack() override {
+        cout << nickname << " (" << job_name << ") : 단검으로 빠르게 찌른다!" << endl;
+    }
+
+    void attack(Monster* monster) override {
+        cout << nickname << "이(가) 단검으로 " << monster->getName() << "을(를) 찔렀다!" << endl;
+        monster->damaged(15);
+    }
+};
+
+// Archer
+class Archer : public Player 
+{
+public:
+    Archer(string nickname) : Player(nickname) 
+    {
+        job_name = "궁수";
+        Accuracy = 80;
+        cout << "* 궁수로 전직하였습니다." << endl;
+    }
+
+    void attack() override 
+    {
+        cout << nickname << " (" << job_name << ") : 화살을 날린다!" << endl;
+    }
+
+    void attack(Monster* monster) override {
+        cout << nickname << "이(가) 정확하게 화살을 쐈다!" << endl;
+        monster->damaged(18);
+    }
+};
+
+//Main 함수
+int main() 
+{
+    Player* players[4];
+    string nickname;
+
+    cout << "닉네임을 입력하세요: ";
+    cin >> nickname;
+
+    cout << "직업을 선택하세요 (1: 전사, 2: 마법사, 3: 도적, 4: 궁수): ";
+    int choice;
+    cin >> choice;
+
+    switch (choice) 
+    {
+    case 1: players[0] = new Warrior(nickname); break;
+    case 2: players[0] = new Magician(nickname); break;
+    case 3: players[0] = new Thief(nickname); break;
+    case 4: players[0] = new Archer(nickname); break;
+    default: cout << "잘못된 선택입니다." << endl; return 0;
+    }
+
+    players[0]->showStatus();
+
+    // 몬스터 생성
+    Monster slime("슬라임", 50);
+
+    cout << "\n=== 전투 시작! ===" << endl;
+    while (!slime.isDead()) 
+    {
+        players[0]->attack(&slime);
+        if (slime.isDead()) 
+        {
+            cout << slime.getName() << "을(를) 물리쳤다!" << endl;
+            break;
+        }
+    }
+
+    delete players[0];
+    return 0;
+}
