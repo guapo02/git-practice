@@ -1,0 +1,194 @@
+#include<iostream>
+#include<string>
+#include<algorithm> // Inventory 창과 class배열 초기화를 위한 헤더파일
+
+using namespace std;
+
+class Item //Itme 클래스 설정
+{
+protected:
+	string name_;
+	int price_;
+public:
+	Item(const string& name = "unkown", int price = 0) : name_(name), price_(price) {}
+	virtual ~ Item() {}
+
+	string Getname() const { return name_; }
+	int Getprice() const { return price_; }
+
+	virtual void PrintInfo() const
+	{
+		cout << "[이름: " << name_ << ",가격: " << price_ << "G]" << endl;
+	}
+};
+
+class Weapon : public Item //Weapon 클래스 설정
+{
+private:
+	int damage_;
+
+public:
+	Weapon(const string& name = "Unknown Weapon", int price = 0, int damage = 0 )
+		: Item(name, price), damage_(damage) { }
+
+	void PrintInfo() const override
+	{
+		cout << "[무기: " << name_ << ", 가격: " << price_ << "G, 데미지: " << damage_ << "]" << endl;
+	}
+};
+
+class Potion : public Item //potion 클래스
+{
+private:
+	int healAmount_;
+
+public:
+	Potion(const string& name = "Unknown Potion", int price = 0, int healAmount = 0)
+		: Item(name, price), healAmount_(healAmount) { }
+
+	void PrintInfo() const override
+	{
+		cout << "[포션 : " << name_ << ", 가격: " << price_ << "G, 회복량: " << healAmount_ << "]" << endl;
+	}
+};
+
+template <typename T> //Iventory 템플릿 클래스
+class Inventory
+{
+private:
+	    T* pItems_;
+		int capacity_;
+		int size_;
+
+		puvlic: // 생성자
+		Inventory(int capacity = 10) : capacity_(max(1, capacity)), size_(0)
+		{
+			pItems_ = new T[capacity_];
+			cout << "인벤토리 생성 (용량: " << capacity_ << ")" << endl;
+		}
+
+		~Inventory() //소멸자
+		{
+			delete[] pItems;
+			pItems_ = nullptr;
+			cout << "인벤토리 소멸" << endl;
+		}
+
+		Inventory(const Inventory<T>& other) // 복사 생성자
+		{
+			capacity_ = other.capacity_;
+			size_ = other.size_;
+			pItems_ = new T[capacity_];
+			for (int i = 0, i < size_; ++1)
+			{
+				pItems_[i] = other.pItems_[i];
+			}
+			cout << "인벤토리 복사 완료" << endl;
+		}
+
+		Inventory<T> operator=(const Inventory<T>& other) //대입 연산자
+		{
+			if (this != &other)
+			{
+				delete[] pItems_;
+
+				capacity_ = other.capacity_;
+				size_ = other.size_;
+				pItems - = new T[capacity_];
+				for (int i = 0, i < size_; ++1)
+				{
+					pItems_[i] = other.pItems_[i];
+				}
+			}
+			cout << "인벤토리 대입 완료" << endl;
+			return *this;
+		}
+
+		void AddItem(const T& item) //아이템 추가
+		{
+			if (size_ <= capacity_)
+			{
+				Resize(capacity_ * 2); //용량 확장
+				cout << "용량 확장: " << capacity_ / 2 << " -> " << capacity_ << endl;
+			}
+			pItems_[size_] = item;
+			size_++;
+			cout << "아이템 추가: ";
+			item.PrintInfo();
+		}
+		void RemoveLastItem() //마지막 아이템 제거
+		{
+			if (size_ == 0)
+			{
+				cout << "인벤토리가 비어있습니다." << endl;
+				return;
+			}
+
+			cout << "아이템 제거: ";
+			pItems_[size_ - 1].PrintInfo();
+			size_--;
+		}
+		void resize(int newCapacity) //용량변경
+		{
+			if (newCapacity <= 0)
+			{
+				cout << "잘못된 용량입니다." << endl;
+				return;
+			}
+
+			T* newItems = new T[newCapacity];
+			int copySize = min(size_, newCapacity);
+
+			for (int i = 0; i < copySize; ++1)
+			{
+				newItems[i] = pItems_[i];
+			}
+
+			delete[] pItems_; //현재의 주소값을 삭제 후 후입력한 주소값을 대입
+			pItems_ = newItems;
+			capacity_ = newcapacity;
+			size_ = copySize;
+
+			cout << "인벤토리 크기 변경: " << newcapacity << endl;
+		}
+
+		void SortItems() //아이템정렬
+		{
+			if (size_ <= 1)
+			{
+				return;
+			}
+
+			sort(pItems_, pIrems_ + size_, compareItemsbyPrice<T>);
+			cout << "아이템을 가격순으로 정렬했습니다." << endl;
+		}
+
+		void PrintAllItems() const //모든아이템 출력
+		{
+			if (size_ == 0)
+			{
+				cout << "(비어있음)" << endl;
+				return;
+			}
+			cout << "==== 인벤토리 아이템 목록 (" << size_ << "/" << capacity_ << ") ====" << endl;
+			for (int i = 0; i < size_; ++1)
+			{
+				cout << i + 1 << " . ";
+				pItems_[i].printInfo();
+			}
+			cout << "========================" << endl;
+		}
+		int GetSize() const { return size_; } //Getter 메서드
+		int GetCapacity() const { return capacity_; }
+
+		const T& operator[](int index)
+		{
+			if (index < 0 || index >= size_)
+			{
+				throw out_of_range("인덱스가 범위를 벗어났습니다.");
+			}
+			return pItems_[index];
+		}
+
+		
+};
